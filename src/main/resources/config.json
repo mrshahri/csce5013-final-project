@@ -3,5 +3,6 @@
   "secret_key":"tOMYgGrLURCwLTKBJhTD+AeXHbytXYJWzhIOp9fL",
   "region":"us-east-1",
   "security_group":"CPMC-Testbed-UARK1",
-  "security_key":"cpmc-key-pair"
+  "security_key":"cpmc-key-pair",
+  "ami_id": "t2.micro"
 }

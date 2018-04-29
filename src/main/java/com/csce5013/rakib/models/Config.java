@@ -18,6 +18,7 @@ public class Config {
     private String region;
     private String securityGroupName;
     private String securityKeyName;
+    private String amiId;
 
     public Config() {
         try {
@@ -32,6 +33,8 @@ public class Config {
             this.region = jsonObject.get("region").getAsString();
             this.securityGroupName = jsonObject.get("security_group").getAsString();
             this.securityKeyName = jsonObject.get("security_key").getAsString();
+            this.amiId = jsonObject.get("ami_id").getAsString();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,6 +58,10 @@ public class Config {
 
     public String getSecurityKeyName() {
         return securityKeyName;
+    }
+
+    public String getAmiId() {
+        return amiId;
     }
 
 /*
