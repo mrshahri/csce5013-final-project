@@ -22,4 +22,7 @@
 
     <mvc:annotation-driven />
 
+    <bean id="config" class="com.csce5013.rakib.models.Config" scope="prototype"/>
+    <bean id="awsManager" class="com.csce5013.rakib.controllers.AWSManager" scope="singleton" depends-on="config"/>
+
 </beans>

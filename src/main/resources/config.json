@@ -1,0 +1,7 @@
+{
+  "access_key":"AKIAJHTS4LF7Q4DICQ4A",
+  "secret_key":"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",
+  "region":"us-east-1",
+  "security_group":"CPMC-Testbed-UARK1",
+  "security_key":"cpmc-key-pair"
+}
