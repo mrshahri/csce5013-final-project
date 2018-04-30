@@ -36,9 +36,23 @@
 
     <script>
         
-        function toggleMachinePower(machineId) {
-            // TODO: Call Python Server using .ajax
-            alert('Clicked');
+        function toggleMachinePower(instanceId, currentState) {
+            var nextState = 'ON';
+            if (currentState === 'ON') {
+                nextState = 'OFF';
+            }
+            $.ajax({
+                url: "http://localhost:10080/app-opt-cloud/webservices/instances/" + instanceId,
+                type: 'PUT',
+                dataType: "json",
+                data:nextState,
+                success: function (data) {
+                },
+                complete: function (data) {
+                    alert(data.responseText);
+                },
+                timeout: 200000  // two minutes
+            });
         }
         
         function bringInstancesData() {
@@ -70,9 +84,11 @@
                 tableHtml.innerHTML += "<tr>";
                 var buttonHtml = "";
                 if (instance['machineStatus'] === 'ON') {
-                    buttonHtml = "<td><button type=\"button\" class=\"btn btn-success\" onclick=\"toggleMachinePower('" + instance['machineId'] + "')\">Power OFF</button></td>";
+                    buttonHtml = "<td><button type=\"button\" class=\"btn btn-warning\" onclick=\"toggleMachinePower('"
+                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Power OFF</button></td>";
                 } else {
-                    buttonHtml = "<td><button type=\"button\" class=\"btn btn-warning\" onclick=\"toggleMachinePower('" + instance['machineId'] + "')\">Power ON</button></td>";
+                    buttonHtml = "<td><button type=\"button\" class=\"btn btn-success\" onclick=\"toggleMachinePower('"
+                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Power ON</button></td>";
                 }
 
                 tableHtml.innerHTML += "<td>" + instance['instanceId'] + "</td>" +

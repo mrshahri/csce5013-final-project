@@ -19,6 +19,8 @@ public class Config {
     private String securityGroupName;
     private String securityKeyName;
     private String amiId;
+    private String piServerStatusesURL;
+    private String PiServerUpdateStatusURL;
 
     public Config() {
         try {
@@ -34,6 +36,8 @@ public class Config {
             this.securityGroupName = jsonObject.get("security_group").getAsString();
             this.securityKeyName = jsonObject.get("security_key").getAsString();
             this.amiId = jsonObject.get("ami_id").getAsString();
+            this.piServerStatusesURL = jsonObject.get("PiServerStatusesURL").getAsString();
+            this.PiServerUpdateStatusURL = jsonObject.get("PiServerUpdateStatusURL").getAsString();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,6 +68,13 @@ public class Config {
         return amiId;
     }
 
+    public String getPiServerStatusesURL() {
+        return piServerStatusesURL;
+    }
+
+    public String getPiServerUpdateStatusURL() {
+        return PiServerUpdateStatusURL;
+    }
 /*
     // Test config
     public static void main(String[] args) {

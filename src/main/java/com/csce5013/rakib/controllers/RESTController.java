@@ -1,19 +1,21 @@
 package com.csce5013.rakib.controllers;
 
+import com.csce5013.rakib.models.Config;
 import com.csce5013.rakib.models.InstanceModel;
+import com.csce5013.rakib.models.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +28,9 @@ public class RESTController {
     @Autowired
     private AWSManager awsManager;
 
+    @Autowired
+    private Config config;
+
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RESTController.class);
 
     @RequestMapping(value = "/instances", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,7 +42,7 @@ public class RESTController {
 
         // Update status of machines from PiServer
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet getRequest = new HttpGet("http://localhost:8080/statuses");
+        HttpGet getRequest = new HttpGet(config.getPiServerStatusesURL());
         getRequest.addHeader("accept", "application/json");
         CloseableHttpResponse response = httpClient.execute(getRequest);
         try {
@@ -56,7 +61,34 @@ public class RESTController {
         } finally {
             response.close();
         }
-
         return instances;
+    }
+
+    @RequestMapping(value = "/instances/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseMessage updateMachineStatus(@PathVariable("id") String id,
+                                               @RequestBody String action) throws IOException {
+        // First close the EC2 instance
+        awsManager.connectAWSIfNot();
+        if ("ON".equals(action)) {
+            awsManager.startInstance(id);
+        } else if ("OFF".equals(action)) {
+            awsManager.stopInstance(id);
+        } else {
+            throw new RuntimeException("Wrong message body");
+        }
+
+        // Update PiServer for LED status
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPut request = new HttpPut(config.getPiServerUpdateStatusURL()
+                + awsManager.getMachineIdFromInstanceId(id));
+        request.addHeader("accept", "application/json");
+        request.setEntity(new StringEntity(action, "utf-8"));
+        CloseableHttpResponse response = httpClient.execute(request);
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+        }
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setResponse("Updated");
+        return responseMessage;
     }
 }

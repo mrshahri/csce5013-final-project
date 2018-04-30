@@ -9,12 +9,15 @@ import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.*;
 import com.csce5013.rakib.models.Config;
 import com.csce5013.rakib.models.InstanceModel;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Rakib on 4/28/2018.
@@ -25,6 +28,9 @@ public class AWSManager {
     private Config config;
 
     private AmazonEC2 ec2Client;
+
+    private final static org.slf4j.Logger logger = LoggerFactory.getLogger(AWSManager.class);
+
 
     public AWSManager() {
     }
@@ -41,13 +47,10 @@ public class AWSManager {
                     config.getSecretKey()
             );
 
-            ec2Client = AmazonEC2ClientBuilder.standard()
+            this.ec2Client = AmazonEC2ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(credentials))
                     .withRegion(Regions.US_EAST_1)
                     .build();
-            AmazonEC2 ec2Client = AmazonEC2ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                    .withRegion(Regions.US_EAST_1).build();
         }
         return ec2Client;
     }
@@ -67,9 +70,7 @@ public class AWSManager {
         CreateTagsRequest tag_request = new CreateTagsRequest()
                 .withTags(tag);
         CreateTagsResult tag_response = ec2Client.createTags(tag_request);
-        System.out.printf(
-                "Successfully started EC2 instance %s based on AMI %s",
-                instanceId, config.getAmiId());
+        logger.debug("Successfully started EC2 instance {} based on AMI {}", instanceId, config.getAmiId());
         return instanceId;
     }
 
@@ -82,18 +83,16 @@ public class AWSManager {
                 };
         DryRunResult dry_response = ec2Client.dryRun(dry_request);
         if (!dry_response.isSuccessful()) {
-            System.out.printf(
-                    "Failed dry run to start instance %s", instanceId);
+            logger.debug("Failed dry run to start instance {}", instanceId);
             throw dry_response.getDryRunResponse();
         }
         StartInstancesRequest request = new StartInstancesRequest()
                 .withInstanceIds(instanceId);
         ec2Client.startInstances(request);
-        System.out.printf("Successfully started instance %s", instanceId);
+        logger.debug("Successfully started instance {}", instanceId);
     }
 
-    public void stopInstance(String instanceId)
-    {
+    public void stopInstance(String instanceId) {
         DryRunSupportedRequest<StopInstancesRequest> dry_request =
                 () -> {
                     StopInstancesRequest request = new StopInstancesRequest()
@@ -102,22 +101,21 @@ public class AWSManager {
                     return request.getDryRunRequest();
                 };
         DryRunResult dry_response = ec2Client.dryRun(dry_request);
-        if(!dry_response.isSuccessful()) {
-            System.out.printf(
-                    "Failed dry run to stop instance %s", instanceId);
+        if (!dry_response.isSuccessful()) {
+            logger.debug("Failed dry run to stop instance {}", instanceId);
             throw dry_response.getDryRunResponse();
         }
         StopInstancesRequest request = new StopInstancesRequest()
                 .withInstanceIds(instanceId);
         ec2Client.stopInstances(request);
-        System.out.printf("Successfully stop instance %s", instanceId);
+        logger.debug("Successfully stop instance {}", instanceId);
     }
 
     public void rebootInstance(String instanceId) {
         RebootInstancesRequest request = new RebootInstancesRequest()
                 .withInstanceIds(instanceId);
         RebootInstancesResult response = ec2Client.rebootInstances(request);
-        System.out.printf("Successfully rebooted instance %s", instanceId);
+        logger.debug("Successfully rebooted instance {}", instanceId);
     }
 
     public List<InstanceModel> getListOfCreatedInstances() {
@@ -134,5 +132,17 @@ public class AWSManager {
             }
         }
         return models;
+    }
+
+    public String getMachineIdFromInstanceId(String instanceId) {
+        DescribeInstancesResult describeInstancesResult = ec2Client.describeInstances();
+        for (Reservation reservation : describeInstancesResult.getReservations()) {
+            for (Instance instance : reservation.getInstances()) {
+                if (instance.getInstanceId().equals(instanceId)) {
+                    return instance.getTags().get(0).withKey("Name").getValue();
+                }
+            }
+        }
+        return "";
     }
 }
