@@ -5,6 +5,6 @@
   "security_group":"CPMC-Testbed-UARK1",
   "security_key":"cpmc-key-pair",
   "ami_id": "t2.micro",
-  "PiServerStatusesURL": "http://10.5.52.61:8080/statuses",
-  "PiServerUpdateStatusURL": "http://10.5.52.61:8080/status/"
+  "PiServerStatusesURL": "http://10.5.52.93:8080/statuses",
+  "PiServerUpdateStatusURL": "http://10.5.52.93:8080/status/"
 }
