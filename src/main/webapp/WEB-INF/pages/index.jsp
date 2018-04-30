@@ -42,7 +42,7 @@
                 nextState = 'OFF';
             }
             $.ajax({
-                url: "http://localhost:10080/app-opt-cloud/webservices/instances/" + instanceId,
+                url: "http://uaf132854.ddns.uark.edu:10080/app-opt-cloud/webservices/instances/" + instanceId,
                 type: 'PUT',
                 dataType: "json",
                 data:nextState,
@@ -57,7 +57,7 @@
         
         function bringInstancesData() {
             $.ajax({
-                url: "http://localhost:10080/app-opt-cloud/webservices/instances",
+                url: "http://uaf132854.ddns.uark.edu:10080/app-opt-cloud/webservices/instances",
                 dataType: "json",
                 success: function (data) {
                 },
