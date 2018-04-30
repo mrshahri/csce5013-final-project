@@ -80,7 +80,7 @@
                 "<th>" + "Machine Action" + "</th>" +
                 "</tr>";
             for (var i = 0; i < instances.length; ++i) {
-                var instance = instances[0];
+                var instance = instances[i];
                 tableHtml.innerHTML += "<tr>";
                 var buttonHtml = "";
                 if (instance['machineStatus'] === 'ON') {

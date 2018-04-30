@@ -4,6 +4,7 @@ import com.csce5013.rakib.models.Config;
 import com.csce5013.rakib.models.InstanceModel;
 import com.csce5013.rakib.models.ResponseMessage;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -54,7 +55,10 @@ public class RESTController {
             Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             for (InstanceModel instance : instances) {
-                instance.setMachineStatus(jsonObject.get(instance.getMachineId()).getAsString());
+                JsonElement element = jsonObject.get(instance.getMachineId());
+                if (element != null) {
+                    instance.setMachineStatus(element.getAsString());
+                }
             }
         } catch (IOException e) {
             logger.error("Failed to fetch machine status {}", e);
