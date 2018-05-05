@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.csce5013.rakib</groupId>
-    <artifactId>app-opt-cloud</artifactId>
+    <artifactId>cpmc-aws</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>App for Cloud Resource Optimizer</name>
@@ -92,7 +92,7 @@
     </dependencies>
 
     <build>
-        <finalName>app-ultimaker</finalName>
+        <finalName>app-csce5013</finalName>
 
         <plugins>
             <!-- Eclipse project -->
