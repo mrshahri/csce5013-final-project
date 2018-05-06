@@ -145,4 +145,16 @@ public class AWSManager {
         }
         return "";
     }
+
+    public String getEC2InstanceStatus(String instanceId) {
+        DescribeInstancesResult describeInstancesResult = ec2Client.describeInstances();
+        for (Reservation reservation : describeInstancesResult.getReservations()) {
+            for (Instance instance : reservation.getInstances()) {
+                if (instance.getInstanceId().equals(instanceId)) {
+                    return instance.getState().getName();
+                }
+            }
+        }
+        return "";
+    }
 }

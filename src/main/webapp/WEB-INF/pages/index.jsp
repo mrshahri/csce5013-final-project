@@ -35,21 +35,66 @@
     <script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 
     <script>
-        
+
+        function startPrinting() {
+            var parametersObj = {deviceId: "bukito", operationId: "startJob", parameters: []};
+            var parameters = [];
+            parameters.push({id: "material", name: "", type: "value", value: "PLA"})
+            parameters.push({id: "quantity", name: "", type: "value", value: "1"})
+            parameters.push({id: "objName", name: "", type: "value", value: 'Triangle'})
+            parametersObj.parameters = parameters;
+            var requestBody = JSON.stringify(parametersObj);
+            $.ajax({
+                type: 'POST',
+                url: "${postUrl}",
+                data: requestBody,
+                success: function (data) {
+                    alert('data: ' + data);
+                },
+                contentType: "application/json",
+                dataType: 'json'
+            });
+        }
+
+        function stopPrinting() {
+            var parametersObj = {deviceId: "bukito", operationId: 'stopJob', parameters: []};
+            var requestBody = JSON.stringify(parametersObj);
+            $.ajax({
+                type: 'POST',
+                url: "${postUrl}",
+                data: requestBody,
+                success: function (data) {
+                    alert('data: ' + data);
+                },
+                contentType: "application/json",
+                dataType: 'json'
+            });
+        }
+
         function toggleMachinePower(instanceId, currentState) {
             var nextState = 'ON';
             if (currentState === 'ON') {
                 nextState = 'OFF';
+                stopPrinting();
+                console.log('Waiting to power off the machine for 2 minutes')
+                setTimeout(powerMachine(instanceId, nextState), 120000);
+            } else {
+                console.log('Waiting to power on the machine for 1 minutes')
+                powerMachine(instanceId, nextState);
+                setTimeout(startPrinting(), 60000);
             }
+        }
+        
+        function powerMachine(instanceId, powerState) {
             $.ajax({
-                url: "http://uaf132854.ddns.uark.edu:10080/app-opt-cloud/webservices/instances/" + instanceId,
+                url: "${instancesUrl}" + instanceId,
                 type: 'PUT',
                 dataType: "json",
-                data:nextState,
+                data:powerState,
                 success: function (data) {
                 },
                 complete: function (data) {
-                    alert(data.responseText);
+                    alert('Machine powered ' + powerState);
                 },
                 timeout: 200000  // two minutes
             });
@@ -57,7 +102,7 @@
         
         function bringInstancesData() {
             $.ajax({
-                url: "http://uaf132854.ddns.uark.edu:10080/app-opt-cloud/webservices/instances",
+                url: "${instancesUrl}",
                 dataType: "json",
                 success: function (data) {
                 },
@@ -85,10 +130,10 @@
                 var buttonHtml = "";
                 if (instance['machineStatus'] === 'ON') {
                     buttonHtml = "<td><button type=\"button\" class=\"btn btn-warning\" onclick=\"toggleMachinePower('"
-                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Power OFF</button></td>";
+                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Start Printing</button></td>";
                 } else {
                     buttonHtml = "<td><button type=\"button\" class=\"btn btn-success\" onclick=\"toggleMachinePower('"
-                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Power ON</button></td>";
+                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Stop Printing</button></td>";
                 }
 
                 tableHtml.innerHTML += "<td>" + instance['instanceId'] + "</td>" +

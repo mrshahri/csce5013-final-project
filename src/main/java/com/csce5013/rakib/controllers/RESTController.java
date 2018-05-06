@@ -81,7 +81,7 @@ public class RESTController {
             throw new RuntimeException("Wrong message body");
         }
 
-        // Update PiServer for LED status
+        // Update PiServer for new Machine Status
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPut request = new HttpPut(config.getPiServerUpdateStatusURL()
                 + awsManager.getMachineIdFromInstanceId(id));

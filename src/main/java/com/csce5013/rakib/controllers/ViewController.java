@@ -23,6 +23,9 @@ public class ViewController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String welcome(ModelMap model) throws FileNotFoundException {
+        model.addAttribute("postUrl", "http://uaf132854.ddns.uark.edu:8100/app-ultimaker/operate-device");
+        model.addAttribute("monitorUrl", "http://uaf132854.ddns.uark.edu:9002/virtualization-uark/monitor");
+        model.addAttribute("instancesUrl", "http://uaf132854.ddns.uark.edu:10080/cpmc-aws/webservices/instances/");
         return VIEW_INDEX;
     }
 }
