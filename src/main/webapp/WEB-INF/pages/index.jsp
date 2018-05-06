@@ -77,11 +77,11 @@
                 stopPrinting();
                 console.log('Waiting to power off the machine for 2 minutes')
                 power_state = 'OFF';
-                setTimeout(powerMachine, 120000);
+                setTimeout(powerMachine, 5000);
             } else {
                 console.log('Waiting to power on the machine for 1 minutes')
                 powerMachine();
-                setTimeout(startPrinting, 60000);
+                setTimeout(startPrinting, 6000);
             }
         }
         
