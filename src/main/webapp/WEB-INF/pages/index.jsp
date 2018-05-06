@@ -80,7 +80,7 @@
                 setTimeout(powerMachine, 120000);
             } else {
                 console.log('Waiting to power on the machine for 1 minutes')
-                powerMachine(instanceId, nextState);
+                powerMachine();
                 setTimeout(startPrinting, 60000);
             }
         }
