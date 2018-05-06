@@ -130,10 +130,10 @@
                 var buttonHtml = "";
                 if (instance['machineStatus'] === 'ON') {
                     buttonHtml = "<td><button type=\"button\" class=\"btn btn-warning\" onclick=\"toggleMachinePower('"
-                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Start Printing</button></td>";
+                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Stop Printing</button></td>";
                 } else {
                     buttonHtml = "<td><button type=\"button\" class=\"btn btn-success\" onclick=\"toggleMachinePower('"
-                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Stop Printing</button></td>";
+                        + instance['instanceId'] + "','" + instance['machineStatus'] + "')\">Start Printing</button></td>";
                 }
 
                 tableHtml.innerHTML += "<td>" + instance['instanceId'] + "</td>" +
