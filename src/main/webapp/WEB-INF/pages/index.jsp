@@ -28,14 +28,12 @@
         }
     </style>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <%--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>--%>
     <script src="<c:url value="/resources/js/jquery-3.3.1.min.js"/>"></script>
     <script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 
     <script>
-
+        var instance_id = '';
+        var power_state = '';
         function startPrinting() {
             var parametersObj = {deviceId: "bukito", operationId: "startJob", parameters: []};
             var parameters = [];
@@ -72,29 +70,31 @@
         }
 
         function toggleMachinePower(instanceId, currentState) {
-            var nextState = 'ON';
+            instance_id = instanceId;
+            power_state = 'ON';
+
             if (currentState === 'ON') {
-                nextState = 'OFF';
                 stopPrinting();
                 console.log('Waiting to power off the machine for 2 minutes')
-                setTimeout(powerMachine(instanceId, nextState), 120000);
+                power_state = 'OFF';
+                setTimeout(powerMachine, 120000);
             } else {
                 console.log('Waiting to power on the machine for 1 minutes')
                 powerMachine(instanceId, nextState);
-                setTimeout(startPrinting(), 60000);
+                setTimeout(startPrinting, 60000);
             }
         }
         
-        function powerMachine(instanceId, powerState) {
+        function powerMachine() {
             $.ajax({
-                url: "${instancesUrl}" + instanceId,
+                url: "${instancesUrl}" + instance_id,
                 type: 'PUT',
                 dataType: "json",
-                data:powerState,
+                data:power_state,
                 success: function (data) {
                 },
                 complete: function (data) {
-                    alert('Machine powered ' + powerState);
+                    alert('Machine powered ' + power_state);
                 },
                 timeout: 200000  // two minutes
             });
